@@ -10,6 +10,10 @@ Código que o PDC usa para avaliar os modelos dos times na **VAKRA** (caps 1 e 2
 
 O resultado volta na própria issue.
 
+## Placar
+
+Notas agregadas em [`placar/`](placar/), publicadas em https://ceia-pdc-slms.github.io/vakra-eval/placar/. Para atualizar: `python3 placar/gerar.py <pasta dos runs>` e um PR.
+
 ## Regras
 
 - Nada dos domínios reservados no treino: `airline`, `cookbook`, `law_episode`, `mental_health_survey`, `music_tracker`, `shakespeare`, `student_loan`, `university`, `world_development_indicators`. Vale para todas as capacidades e para dados sintéticos gerados a partir deles.
