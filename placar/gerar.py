@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Placar: coleta as notas agregadas dos runs e gera placar/index.html (nenhuma pergunta, gabarito ou resposta).
+"""Placar: coleta as notas agregadas dos runs e gera placar/index.html e
+placar/completo.html (nenhuma pergunta, gabarito ou resposta: só contagens).
 Uso: python3 placar/gerar.py                      # regenera a página a partir de placar/resultados.json
      python3 placar/gerar.py output/lumitest      # antes, atualiza resultados.json com os runs dessa pasta
 Um run só entra quando a avaliação cobre todas as perguntas e não tem "Judge Error".
 Para incluir um modelo, acrescente-o em MODELOS (a chave é o nome do run sem -think/-nothink).
 O hub (ceia-pdc-slms.github.io) publica a página em até uma hora após o merge na main."""
-import json, os, sys, html, datetime
+import json, os, re, sys, html, datetime
 AQUI = os.path.dirname(os.path.abspath(__file__)); JS = f"{AQUI}/resultados.json"
 MODELOS = [("Qwen3.8-Flash-Next (FP8)", "", "qwen3.8-flash"), ("Nemotron 3 Nano 4B", "", "nemotron-3-nano-4b"),
            ("Lumi 4B", "https://huggingface.co/ceia-research/lumi-4b", "lumi-4b"),
@@ -18,13 +19,31 @@ def le(run, c):
     t = open(p).read(); D = json.loads(t)["domains"]
     if "Judge Error" in t or sum(d["n_groundtruth"] for d in D.values()) != TOT[c]: return None   # eval incompleto não entra
     return {k: (int(d["summary"]["num_correct"]), d["n_groundtruth"]) for k, d in sorted(D.items())}
+CONN = re.compile(r"ClosedResource|Connection closed|Connection error|Failed to connect")
+def tipos(run, c):
+    """O que aconteceu com cada pergunta, só em contagens: ok, nao (errada), sem (sem apoio nas tools), exec (timeout, limite), conn (tools caíram)."""
+    ev = json.load(open(f"{sys.argv[1]}/{run}/cap{c}/eval/results.json"))["domains"]; o = {}
+    for d, e in sorted(ev.items()):
+        nota = {x["uuid"]: x for x in e["dialogues"]}; n = {}
+        for x in json.load(open(f"{sys.argv[1]}/{run}/cap{c}/{d}.json")):
+            y = nota.get(x["uuid"])
+            if y and y["score"] == 1: k = "ok"
+            elif x["status"] == "error": k = "conn" if CONN.search(str(x.get("error") or "")) else "exec"
+            else: k = "sem" if y["details"]["per_turn"][-1]["metadata"].get("groundedness_score") == 0 else "nao"
+            n[k] = n.get(k, 0) + 1
+        if sum(n.values()) != e["n_groundtruth"] or n.get("ok", 0) != int(e["summary"]["num_correct"]): sys.exit(f"contagem não bate: {run} cap {c} {d} {n}")
+        o[d] = n
+    return o
+JT = f"{AQUI}/tipos.json"
 res = json.load(open(JS)) if os.path.exists(JS) else {}   # "<run>/cap<c>": {domínio: [certas, total]}
+tip = json.load(open(JT)) if os.path.exists(JT) else {}   # "<run>/cap<c>": {domínio: {tipo: contagem}}
 if len(sys.argv) > 1:
     for _, _, k in MODELOS:
         for m, _ in MODOS:
             for c in (1, 2):
                 v = le(f"{k}-{m}", c)
-                if v: res[f"{k}-{m}/cap{c}"] = v
+                if v: res[f"{k}-{m}/cap{c}"] = v; tip[f"{k}-{m}/cap{c}"] = tipos(f"{k}-{m}", c)
+    json.dump(tip, open(JT, "w"), indent=1, sort_keys=True); open(JT, "a").write("\n")
     json.dump(res, open(JS, "w"), indent=1, sort_keys=True); open(JS, "a").write("\n")
 R = {(k, m, c): res.get(f"{k}-{m}/cap{c}") for _, _, k in MODELOS for m, _ in MODOS for c in (1, 2)}
 f2 = lambda v: f"{v:.2f}".replace(".", ",")
@@ -111,6 +130,7 @@ li {{ max-width: 76ch; margin: 6px 0; }}
 <p class="eyebrow">Desafio Lumi Agêntico · {hoje}</p>
 <h1 class="display">Placar VAKRA: modelos de base</h1>
 <p class="lede">Fração de perguntas certas em 9 domínios da <a href="https://github.com/IBM/vakra">VAKRA</a> reservados para avaliação. O agente usa ferramentas por MCP e um modelo juiz confere a resposta.</p>
+<p class="muted">Veja também o <a href="completo.html">placar completo</a>, com os tipos de erro.</p>
 <div class="leg"><span><i class="s1"></i>sem thinking</span><span><i class="s2"></i>com thinking</span><span>escala de 0 a 1</span></div>
 <div class="duas">
 <div class="card"><h2>Capacidade 1 · {NOME[1]}</h2><p class="muted">285 perguntas, 7 domínios, até 12 chamadas de ferramenta</p>{barras(1)}</div>
@@ -140,3 +160,15 @@ li {{ max-width: 76ch; margin: 6px 0; }}
 """
 D = f"{AQUI}/index.html"
 open(D, "w").write(P); print("gerado", D, "| fora (não finalizados):", falta)
+
+OBS = ["Só entram runs com a avaliação completa e sem erro do juiz.",
+ "Pergunta que estourou o tempo (300 s; 1.200 s no Qwen, por causa da fila do servidor) ou terminou em erro conta como errada.",
+ "Na cap 1, 5 das 32 perguntas de world_development_indicators não cabem na memória da máquina das ferramentas e contam como erro em todos os runs (“tools caíram”).",
+ "O card do Lumi 4B pede thinking desligado e o do T6-Lumi pede ligado.",
+ "Lumi e T6-Lumi rodaram em máquinas diferentes em parte dos domínios, e a velocidade muda quantas perguntas estouram o tempo.",
+ "Cada configuração rodou uma vez, com temperatura 0.",
+ "Perguntas, gabaritos e respostas não são publicados: os domínios são o teste reservado do desafio."]
+E = {"atualizado": hoje, "obs": OBS, "nomes": {f"{k}-{m}": f"{n} {rot}" for n, _, k in MODELOS for m, rot in MODOS},
+     "dados": [{"run": a.rsplit("/", 1)[0], "cap": int(a[-1]), "d": d, "n": sum(o.values()), "o": o} for a, ds in sorted(tip.items()) for d, o in sorted(ds.items())]}
+open(f"{AQUI}/completo.html", "w").write(open(f"{AQUI}/_modelo.html").read().replace("/*DADOS*/", json.dumps(E, ensure_ascii=False).replace("</", "<\\/")))
+print("gerado", f"{AQUI}/completo.html")

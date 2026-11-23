@@ -1,0 +1,610 @@
+{
+ "lumi-4b-nothink/cap2": {
+  "airline": {
+   "exec": 9,
+   "nao": 7,
+   "ok": 2
+  },
+  "cookbook": {
+   "exec": 22,
+   "nao": 11,
+   "ok": 4
+  },
+  "law_episode": {
+   "exec": 15,
+   "nao": 27,
+   "ok": 5
+  },
+  "mental_health_survey": {
+   "exec": 6,
+   "nao": 20,
+   "ok": 1
+  },
+  "music_tracker": {
+   "exec": 17,
+   "nao": 2
+  },
+  "shakespeare": {
+   "exec": 11,
+   "nao": 7,
+   "ok": 16,
+   "sem": 1
+  },
+  "student_loan": {
+   "exec": 33,
+   "nao": 48,
+   "ok": 6,
+   "sem": 1
+  },
+  "university": {
+   "exec": 20,
+   "nao": 28,
+   "ok": 12,
+   "sem": 1
+  },
+  "world_development_indicators": {
+   "exec": 9,
+   "nao": 15,
+   "ok": 2,
+   "sem": 1
+  }
+ },
+ "nemotron-3-nano-4b-nothink/cap1": {
+  "airline": {
+   "exec": 9,
+   "nao": 10,
+   "ok": 3
+  },
+  "cookbook": {
+   "exec": 14,
+   "nao": 9,
+   "ok": 7,
+   "sem": 2
+  },
+  "law_episode": {
+   "exec": 41,
+   "nao": 11,
+   "ok": 9,
+   "sem": 2
+  },
+  "music_tracker": {
+   "exec": 7,
+   "nao": 8,
+   "ok": 3
+  },
+  "shakespeare": {
+   "exec": 13,
+   "nao": 24,
+   "ok": 12,
+   "sem": 3
+  },
+  "university": {
+   "exec": 26,
+   "nao": 22,
+   "ok": 16,
+   "sem": 2
+  },
+  "world_development_indicators": {
+   "conn": 5,
+   "exec": 14,
+   "nao": 10,
+   "ok": 3
+  }
+ },
+ "nemotron-3-nano-4b-nothink/cap2": {
+  "airline": {
+   "exec": 9,
+   "nao": 2,
+   "ok": 7
+  },
+  "cookbook": {
+   "exec": 8,
+   "nao": 9,
+   "ok": 14,
+   "sem": 6
+  },
+  "law_episode": {
+   "exec": 20,
+   "nao": 10,
+   "ok": 14,
+   "sem": 3
+  },
+  "mental_health_survey": {
+   "exec": 2,
+   "nao": 12,
+   "ok": 11,
+   "sem": 2
+  },
+  "music_tracker": {
+   "exec": 8,
+   "nao": 4,
+   "ok": 5,
+   "sem": 2
+  },
+  "shakespeare": {
+   "exec": 7,
+   "nao": 6,
+   "ok": 19,
+   "sem": 3
+  },
+  "student_loan": {
+   "exec": 12,
+   "nao": 36,
+   "ok": 30,
+   "sem": 10
+  },
+  "university": {
+   "exec": 12,
+   "nao": 8,
+   "ok": 40,
+   "sem": 1
+  },
+  "world_development_indicators": {
+   "exec": 12,
+   "nao": 6,
+   "ok": 5,
+   "sem": 4
+  }
+ },
+ "nemotron-3-nano-4b-think/cap1": {
+  "airline": {
+   "exec": 3,
+   "nao": 10,
+   "ok": 6,
+   "sem": 3
+  },
+  "cookbook": {
+   "exec": 5,
+   "nao": 12,
+   "ok": 10,
+   "sem": 5
+  },
+  "law_episode": {
+   "exec": 7,
+   "nao": 37,
+   "ok": 17,
+   "sem": 2
+  },
+  "music_tracker": {
+   "exec": 3,
+   "nao": 9,
+   "ok": 6
+  },
+  "shakespeare": {
+   "exec": 6,
+   "nao": 25,
+   "ok": 16,
+   "sem": 5
+  },
+  "university": {
+   "exec": 5,
+   "nao": 26,
+   "ok": 27,
+   "sem": 8
+  },
+  "world_development_indicators": {
+   "conn": 5,
+   "exec": 8,
+   "nao": 15,
+   "ok": 3,
+   "sem": 1
+  }
+ },
+ "nemotron-3-nano-4b-think/cap2": {
+  "airline": {
+   "exec": 7,
+   "nao": 3,
+   "ok": 8
+  },
+  "cookbook": {
+   "exec": 5,
+   "nao": 7,
+   "ok": 19,
+   "sem": 6
+  },
+  "law_episode": {
+   "exec": 16,
+   "nao": 8,
+   "ok": 18,
+   "sem": 5
+  },
+  "mental_health_survey": {
+   "exec": 8,
+   "nao": 7,
+   "ok": 11,
+   "sem": 1
+  },
+  "music_tracker": {
+   "exec": 9,
+   "nao": 2,
+   "ok": 2,
+   "sem": 6
+  },
+  "shakespeare": {
+   "exec": 9,
+   "nao": 2,
+   "ok": 22,
+   "sem": 2
+  },
+  "student_loan": {
+   "exec": 28,
+   "nao": 18,
+   "ok": 29,
+   "sem": 13
+  },
+  "university": {
+   "exec": 10,
+   "nao": 5,
+   "ok": 41,
+   "sem": 5
+  },
+  "world_development_indicators": {
+   "exec": 12,
+   "nao": 7,
+   "ok": 5,
+   "sem": 3
+  }
+ },
+ "qwen3.8-flash-nothink/cap1": {
+  "airline": {
+   "exec": 4,
+   "nao": 6,
+   "ok": 9,
+   "sem": 3
+  },
+  "cookbook": {
+   "exec": 8,
+   "nao": 8,
+   "ok": 12,
+   "sem": 4
+  },
+  "law_episode": {
+   "exec": 16,
+   "nao": 22,
+   "ok": 19,
+   "sem": 6
+  },
+  "music_tracker": {
+   "exec": 6,
+   "nao": 2,
+   "ok": 9,
+   "sem": 1
+  },
+  "shakespeare": {
+   "exec": 14,
+   "nao": 10,
+   "ok": 19,
+   "sem": 9
+  },
+  "university": {
+   "exec": 14,
+   "nao": 11,
+   "ok": 29,
+   "sem": 12
+  },
+  "world_development_indicators": {
+   "conn": 5,
+   "exec": 13,
+   "nao": 5,
+   "ok": 7,
+   "sem": 2
+  }
+ },
+ "qwen3.8-flash-nothink/cap2": {
+  "airline": {
+   "exec": 3,
+   "nao": 3,
+   "ok": 10,
+   "sem": 2
+  },
+  "cookbook": {
+   "exec": 3,
+   "nao": 10,
+   "ok": 19,
+   "sem": 5
+  },
+  "law_episode": {
+   "exec": 9,
+   "nao": 6,
+   "ok": 32
+  },
+  "mental_health_survey": {
+   "exec": 11,
+   "nao": 4,
+   "ok": 12
+  },
+  "music_tracker": {
+   "exec": 3,
+   "nao": 4,
+   "ok": 8,
+   "sem": 4
+  },
+  "shakespeare": {
+   "exec": 5,
+   "nao": 3,
+   "ok": 24,
+   "sem": 3
+  },
+  "student_loan": {
+   "exec": 14,
+   "nao": 18,
+   "ok": 41,
+   "sem": 15
+  },
+  "university": {
+   "exec": 5,
+   "nao": 4,
+   "ok": 44,
+   "sem": 8
+  },
+  "world_development_indicators": {
+   "exec": 8,
+   "nao": 3,
+   "ok": 12,
+   "sem": 4
+  }
+ },
+ "qwen3.8-flash-think/cap1": {
+  "airline": {
+   "exec": 2,
+   "nao": 6,
+   "ok": 8,
+   "sem": 6
+  },
+  "cookbook": {
+   "exec": 1,
+   "nao": 13,
+   "ok": 13,
+   "sem": 5
+  },
+  "law_episode": {
+   "exec": 5,
+   "nao": 30,
+   "ok": 20,
+   "sem": 8
+  },
+  "music_tracker": {
+   "exec": 4,
+   "nao": 3,
+   "ok": 9,
+   "sem": 2
+  },
+  "shakespeare": {
+   "exec": 8,
+   "nao": 14,
+   "ok": 16,
+   "sem": 14
+  },
+  "university": {
+   "exec": 10,
+   "nao": 13,
+   "ok": 26,
+   "sem": 17
+  },
+  "world_development_indicators": {
+   "conn": 5,
+   "exec": 6,
+   "nao": 7,
+   "ok": 7,
+   "sem": 7
+  }
+ },
+ "qwen3.8-flash-think/cap2": {
+  "airline": {
+   "exec": 3,
+   "nao": 2,
+   "ok": 12,
+   "sem": 1
+  },
+  "cookbook": {
+   "exec": 3,
+   "nao": 6,
+   "ok": 21,
+   "sem": 7
+  },
+  "law_episode": {
+   "exec": 10,
+   "nao": 4,
+   "ok": 31,
+   "sem": 2
+  },
+  "mental_health_survey": {
+   "exec": 11,
+   "nao": 1,
+   "ok": 13,
+   "sem": 2
+  },
+  "music_tracker": {
+   "nao": 4,
+   "ok": 11,
+   "sem": 4
+  },
+  "shakespeare": {
+   "exec": 1,
+   "nao": 4,
+   "ok": 26,
+   "sem": 4
+  },
+  "student_loan": {
+   "exec": 8,
+   "nao": 14,
+   "ok": 48,
+   "sem": 18
+  },
+  "university": {
+   "exec": 2,
+   "nao": 5,
+   "ok": 48,
+   "sem": 6
+  },
+  "world_development_indicators": {
+   "exec": 6,
+   "nao": 4,
+   "ok": 13,
+   "sem": 4
+  }
+ },
+ "t6-lumi-4b-nothink/cap1": {
+  "airline": {
+   "exec": 6,
+   "nao": 16
+  },
+  "cookbook": {
+   "exec": 6,
+   "nao": 26
+  },
+  "law_episode": {
+   "exec": 18,
+   "nao": 44,
+   "sem": 1
+  },
+  "music_tracker": {
+   "exec": 10,
+   "nao": 8
+  },
+  "shakespeare": {
+   "exec": 14,
+   "nao": 38
+  },
+  "university": {
+   "exec": 16,
+   "nao": 49,
+   "sem": 1
+  },
+  "world_development_indicators": {
+   "conn": 5,
+   "exec": 1,
+   "nao": 25,
+   "ok": 1
+  }
+ },
+ "t6-lumi-4b-nothink/cap2": {
+  "airline": {
+   "exec": 5,
+   "nao": 11,
+   "ok": 2
+  },
+  "cookbook": {
+   "exec": 11,
+   "nao": 21,
+   "ok": 4,
+   "sem": 1
+  },
+  "law_episode": {
+   "exec": 3,
+   "nao": 43,
+   "ok": 1
+  },
+  "mental_health_survey": {
+   "exec": 2,
+   "nao": 25
+  },
+  "music_tracker": {
+   "exec": 9,
+   "nao": 10
+  },
+  "shakespeare": {
+   "exec": 5,
+   "nao": 21,
+   "ok": 9
+  },
+  "student_loan": {
+   "exec": 11,
+   "nao": 77
+  },
+  "university": {
+   "exec": 4,
+   "nao": 57
+  },
+  "world_development_indicators": {
+   "exec": 2,
+   "nao": 25
+  }
+ },
+ "t6-lumi-4b-think/cap1": {
+  "airline": {
+   "exec": 2,
+   "nao": 17,
+   "ok": 3
+  },
+  "cookbook": {
+   "exec": 4,
+   "nao": 28
+  },
+  "law_episode": {
+   "exec": 6,
+   "nao": 52,
+   "ok": 3,
+   "sem": 2
+  },
+  "music_tracker": {
+   "exec": 3,
+   "nao": 15
+  },
+  "shakespeare": {
+   "exec": 5,
+   "nao": 42,
+   "ok": 5
+  },
+  "university": {
+   "exec": 9,
+   "nao": 52,
+   "ok": 5
+  },
+  "world_development_indicators": {
+   "conn": 5,
+   "exec": 3,
+   "nao": 24
+  }
+ },
+ "t6-lumi-4b-think/cap2": {
+  "airline": {
+   "exec": 3,
+   "nao": 9,
+   "ok": 5,
+   "sem": 1
+  },
+  "cookbook": {
+   "exec": 3,
+   "nao": 22,
+   "ok": 10,
+   "sem": 2
+  },
+  "law_episode": {
+   "exec": 11,
+   "nao": 33,
+   "ok": 3
+  },
+  "mental_health_survey": {
+   "exec": 1,
+   "nao": 16,
+   "ok": 9,
+   "sem": 1
+  },
+  "music_tracker": {
+   "nao": 13,
+   "ok": 2,
+   "sem": 4
+  },
+  "shakespeare": {
+   "exec": 6,
+   "nao": 18,
+   "ok": 11
+  },
+  "student_loan": {
+   "exec": 15,
+   "nao": 72,
+   "ok": 1
+  },
+  "university": {
+   "exec": 9,
+   "nao": 47,
+   "ok": 4,
+   "sem": 1
+  },
+  "world_development_indicators": {
+   "exec": 3,
+   "nao": 24
+  }
+ }
+}
