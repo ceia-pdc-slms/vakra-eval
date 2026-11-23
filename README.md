@@ -12,7 +12,10 @@ O resultado volta na própria issue.
 
 ## Placar
 
-Notas agregadas em [`placar/`](placar/), publicadas em https://ceia-pdc-slms.github.io/vakra-eval/placar/. Para atualizar: `python3 placar/gerar.py <pasta dos runs>` e um PR.
+- **Hub oficial do PDC:** https://ceia-pdc-slms.github.io (o placar aparece na lista, como Leaderboard)
+- **Placar completo:** https://ceia-pdc-slms.github.io/vakra-eval/placar/ (gerado a partir de [`placar/`](placar/) deste repositório)
+
+Para atualizar: `python3 placar/gerar.py <pasta dos runs>` e um PR.
 
 ## Regras
 
