@@ -3,15 +3,15 @@
 Uso: python3 placar/gerar.py                      # regenera a página a partir de placar/resultados.json
      python3 placar/gerar.py output/lumitest      # antes, atualiza resultados.json com os runs dessa pasta
 Um run só entra quando a avaliação cobre todas as perguntas e não tem "Judge Error".
-Para incluir um modelo, acrescente-o em MODELOS (a chave é o nome do run sem -think/-nothink; o último campo é o time: "a", "b" ou "base").
+Para incluir um modelo, acrescente-o em MODELOS (a chave é o nome do run sem -think/-nothink; o último campo é o grupo: "lumi" (baseline), "a", "b" ou "base").
 O hub (ceia-pdc-slms.github.io) publica a página em até uma hora após o merge na main."""
 import json, os, sys, html, datetime
 AQUI = os.path.dirname(os.path.abspath(__file__)); JS = f"{AQUI}/resultados.json"
 MODELOS = [("eval-v1", "https://github.com/ceia-pdc-slms/vakra-eval/issues/5", "time-a-eval-v1", "a"),
            ("Qwen3.8-Flash-Next (FP8)", "", "qwen3.8-flash", "base"), ("Nemotron 3 Nano 4B", "", "nemotron-3-nano-4b", "base"),
-           ("Lumi 4B", "https://huggingface.co/ceia-research/lumi-4b", "lumi-4b", "base"),
+           ("Lumi 4B", "https://huggingface.co/ceia-research/lumi-4b", "lumi-4b", "lumi"),
            ("T6-Lumi 4B", "https://huggingface.co/gustavobarrosss/t6-lumi-4b", "t6-lumi-4b", "base")]
-GRUPOS = [("a", "Time A"), ("b", "Time B"), ("base", "Modelos de base")]   # A: cores quentes; B: cores frias; base: cinza
+GRUPOS = [("lumi", "Baseline"), ("a", "Time A"), ("b", "Time B"), ("base", "Outros modelos")]   # baseline: cor do texto; A: cores quentes; B: cores frias; base: cinza
 MODOS = [("nothink", "sem thinking"), ("think", "com thinking")]
 TOT = {1: 285, 2: 359}; NOME = {1: "BI APIs", 2: "Dashboard APIs"}
 def le(run, c):
@@ -98,7 +98,7 @@ section > p {{ max-width: 72ch; }}
 .modo, .val small {{ color: var(--muted); font-weight: 400; }}
 .trilho {{ height: 12px; display: block; border-left: 1px solid var(--line-strong); }}
 .trilho i {{ display: block; height: 100%; min-width: 2px; border-radius: 0 4px 4px 0; }}
-.g-a {{ --cor: var(--c2); --fundo: var(--c2-soft); }} .g-b {{ --cor: var(--c1); --fundo: var(--c1-soft); }} .g-base {{ --cor: var(--faint); --fundo: var(--sunken); }}
+.g-a {{ --cor: var(--c2); --fundo: var(--c2-soft); }} .g-b {{ --cor: var(--c1); --fundo: var(--c1-soft); }} .g-lumi {{ --cor: var(--fg); --fundo: var(--sunken); }} .g-base {{ --cor: var(--faint); --fundo: var(--sunken); }}
 .grupo {{ border-left: 4px solid var(--cor); padding: 2px 0 2px 16px; margin-top: 22px; }}
 .gt {{ display: inline-block; font-size: .84rem; font-weight: 600; margin: 0; padding: 3px 10px; border-radius: var(--r-sm); background: var(--fundo); }}
 .grupo .mod {{ margin-top: 12px; }} .vazio {{ margin: 10px 0 0; font-size: .88rem; }}
@@ -127,7 +127,7 @@ li {{ max-width: 76ch; margin: 6px 0; }}
 <p class="eyebrow">Desafio Lumi Agêntico · {hoje}</p>
 <h1 class="display">Placar VAKRA</h1>
 <p class="lede">Fração de perguntas certas em 9 domínios da <a href="https://github.com/IBM/vakra">VAKRA</a> reservados para avaliação. O agente usa ferramentas por MCP e um modelo juiz confere a resposta.</p>
-<div class="leg"><span class="g-a"><i class="s2"></i>Time A</span><span class="g-b"><i class="s2"></i>Time B</span><span class="g-base"><i class="s2"></i>Modelos de base</span><span>tom suave: sem thinking · tom cheio: com thinking · escala de 0 a 1</span></div>
+<div class="leg"><span class="g-lumi"><i class="s2"></i>Baseline (Lumi 4B)</span><span class="g-a"><i class="s2"></i>Time A</span><span class="g-b"><i class="s2"></i>Time B</span><span class="g-base"><i class="s2"></i>Outros modelos</span><span>tom suave: sem thinking · tom cheio: com thinking · escala de 0 a 1</span></div>
 <div class="duas">
 <div class="card"><h2>Capacidade 1 · {NOME[1]}</h2><p class="muted">285 perguntas, 7 domínios, até 12 chamadas de ferramenta</p>{barras(1)}</div>
 <div class="card"><h2>Capacidade 2 · {NOME[2]}</h2><p class="muted">359 perguntas, 9 domínios, uma chamada de ferramenta</p>{barras(2)}</div>
@@ -146,6 +146,7 @@ li {{ max-width: 76ch; margin: 6px 0; }}
 <li>O card do Lumi 4B pede thinking desligado e o do T6-Lumi pede ligado. Com ferramentas, ambos às vezes entram em laço e terminam em timeout.</li>
 <li>O Lumi e o T6-Lumi rodaram em máquinas diferentes, em parte dos domínios. A velocidade muda quantas perguntas estouram o tempo, então diferenças pequenas entre modos não são conclusivas.</li>
 <li>O <a href="https://github.com/ceia-pdc-slms/vakra-eval/issues/5">eval-v1 do Time A</a> tem os mesmos pesos, código e configuração do Lumi 4B (conferido por hash); a nota é a do run do Lumi 4B com thinking, sem novo run.</li>
+<li>O baseline do desafio é o Lumi 4B, sem e com thinking.</li>
 <li>Só entram configurações com a avaliação completa; por isso nem todo modelo aparece nos dois modos e nas duas capacidades.</li>
 <li>Cada configuração rodou uma vez, com temperatura 0, e sem intervalo de confiança.</li>
 <li>As perguntas, os gabaritos e as respostas não são publicados: os domínios são o teste reservado do desafio.</li>
