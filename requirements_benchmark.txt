@@ -16,7 +16,7 @@
 # Core MCP Dependencies
 # ----------------------------------------------------------------------------
 # Model Context Protocol - for connecting to MCP servers via stdio
-mcp>=1.0.0
+mcp>=1.0.0,<2
 
 # ----------------------------------------------------------------------------
 # LangChain Core Framework

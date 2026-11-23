@@ -383,10 +383,20 @@ def create_llm(
                 "an OpenAI model."
             )
 
-        return ChatOpenAI(
+        # Optional extra request fields for OpenAI-compatible servers, as JSON, e.g.
+        # OPENAI_EXTRA_BODY='{"chat_template_kwargs": {"enable_thinking": false}}' (vLLM)
+        extra = {}
+        if os.environ.get("OPENAI_EXTRA_BODY"):
+            import json as _json
+            extra["extra_body"] = _json.loads(os.environ["OPENAI_EXTRA_BODY"])
+
+        from agents.think_log import ChatOpenAIThink
+
+        return ChatOpenAIThink(
             model=model or "gpt-4.1",
             temperature=temperature,
             api_key=resolved_key,
+            **extra,
         )
 
     elif provider == "litellm":

@@ -3,6 +3,9 @@ from __future__ import annotations
 import re
 import os
 import json
+import subprocess
+import threading
+import time
 from copy import deepcopy
 from prompt import GroundednessPrompt, CorrectnessPrompt
 from utils import JudgeInput, JudgeOutput
@@ -22,11 +25,22 @@ class JudgeValidationError(ValueError):
     """Raised when a judge returns an unexpected/invalid score."""
     pass
 
+_gcloud = {"token": None, "time": 0.0}
+_gcloud_lock = threading.Lock()   # só uma thread chama o gcloud por vez
+
+def _gcloud_token() -> str:
+    """Token do Vertex AI: dura ~1 h, então é renovado a cada 4 min."""
+    with _gcloud_lock:
+        if time.time() - _gcloud["time"] > 240:
+            _gcloud["token"] = subprocess.check_output(["gcloud", "auth", "print-access-token"], text=True).strip()
+            _gcloud["time"] = time.time()
+        return _gcloud["token"]
+
 class ChatGroq(ChatOpenAI):
     """Groq-backed OpenAI-compatible chat model."""
 
     def __init__(self, config: dict):
-        model_name = config.get("model_name", "openai/gpt-oss-120b")
+        model_name = config.get("model_name") or os.getenv("JUDGE_MODEL", "openai/gpt-oss-120b")
         end_point = config.get("end_point", "https://api.groq.com/openai")
 
         api_key = os.getenv("API_KEY")
@@ -37,9 +51,12 @@ class ChatGroq(ChatOpenAI):
 
         groq_config = {}
         groq_config.setdefault("model", model_name)
-        groq_config.setdefault("api_key", api_key)
-        groq_config.setdefault("base_url", end_point.rstrip("/") + "/v1")
+        groq_config.setdefault("api_key", _gcloud_token if api_key == "gcloud" else api_key)
+        groq_config.setdefault("base_url", os.getenv("JUDGE_BASE_URL") or end_point.rstrip("/") + "/v1")
         groq_config.setdefault("temperature", 0)
+        groq_config.setdefault("max_retries", 8)  # espera e tenta de novo em 429, em vez de virar nota 0
+        if os.getenv("JUDGE_PROVIDER"):  # OpenRouter: fixa o provedor (ex.: near-ai)
+            groq_config["extra_body"] = {"provider": {"only": [os.environ["JUDGE_PROVIDER"]]}}
         groq_config.update(params)
 
         super().__init__(**groq_config)

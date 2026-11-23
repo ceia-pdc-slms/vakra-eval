@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple, List
@@ -247,22 +249,27 @@ async def evaluate_domain(
             )
 
             # Score each paired dialogue
-            for idx, (gt_raw, pr_raw) in enumerate(
-                tqdm(paired, desc=f"[{capability_name}][{domain}]", leave=False)
-            ):
-                uuid = str(gt_raw.get("uuid"))
+            def score_one(idx: int):
+                gt_raw, pr_raw = paired[idx]
 
                 # Inject fresh responses so groundedness judge uses tool outputs
                 inject_mcp_responses(pr_raw, mcp_batch_responses_pred[idx], type="pred", capability_name=capability_name)
                 if capability_name != "capability_bi_apis" and mcp_batch_responses_gt is not None:
                     inject_mcp_responses(gt_raw, mcp_batch_responses_gt[idx], type="gt",capability_name=capability_name)
 
-                # Score and store details
-                dialogue_score, dialogue_details = dialogue_scorer.score(
+                return dialogue_scorer.score(
                     gt_dialogue=gt_raw,
                     pred_dialogue=pr_raw,
                     pred_key=PRED_OUTPUT_KEY
                 )
+
+            # JUDGE_WORKERS perguntas ao mesmo tempo (padrão 1 = sequencial); map mantém a ordem
+            with ThreadPoolExecutor(int(os.getenv("JUDGE_WORKERS", "1"))) as pool:
+                scored = list(tqdm(pool.map(score_one, range(len(paired))), total=len(paired),
+                                   desc=f"[{capability_name}][{domain}]", leave=False))
+
+            for (gt_raw, _), (dialogue_score, dialogue_details) in zip(paired, scored):
+                uuid = str(gt_raw.get("uuid"))
                 dialogue_scores.append(float(dialogue_score))
 
                 domain_out["dialogues"].append({

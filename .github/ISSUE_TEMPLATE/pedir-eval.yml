@@ -1,0 +1,38 @@
+name: Pedir eval de um modelo
+description: Avaliar uma versão (tag eval-*) do modelo do time na VAKRA, caps 1 e 2
+title: "[Eval] Time <A ou B>: <tag>"
+labels: ["eval"]
+body:
+  - type: dropdown
+    id: time
+    attributes:
+      label: Time
+      options: [Time A, Time B]
+    validations: { required: true }
+  - type: input
+    id: tag
+    attributes:
+      label: Link da tag no Hugging Face
+      description: A tag precisa começar com "eval-" e o repositório precisa ter o eval.yaml preenchido.
+      placeholder: https://huggingface.co/ceia-pdc-slms/lumi-4b-time-a/tree/eval-v1
+    validations: { required: true }
+  - type: textarea
+    id: mudou
+    attributes:
+      label: O que mudou e o que esperam que melhore
+      placeholder: "SFT com ...; esperamos menos erros de formato na cap 2"
+    validations: { required: true }
+  - type: textarea
+    id: validacao
+    attributes:
+      label: Resultado na validação do time
+      description: Nota que o time obteve na própria validação (domínios e nº de amostras), para comparar.
+  - type: checkboxes
+    id: ok
+    attributes:
+      label: Antes de enviar
+      options:
+        - label: O modelo está completo (LoRA já juntado) e o eval.yaml está no commit da tag
+          required: true
+        - label: Nenhum dos domínios reservados nem o BFCL foram usados no treino
+          required: true

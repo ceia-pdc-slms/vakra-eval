@@ -44,3 +44,10 @@ parlant-data/
 # But still ignore any __pycache__ inside helpers/data
 helpers/data/**/__pycache__/
 gpt-oss-120b*
+
+# Eval do PDC: nada do teste reservado, dados ou resultados no repositório
+/data
+/output
+environment/configs/mcp_tool_universe_id_mapping.yaml
+*.orig
+experimentos*

@@ -28,6 +28,9 @@ Usage:
   # Multiple tasks in parallel
   python benchmark_runner.py --capability_id 2 4 --parallel
 
+  # Several domains at the same time (one subprocess per domain)
+  python benchmark_runner.py --capability_id 1 --parallel-domains 4
+
   # Limit samples per domain
   python benchmark_runner.py --capability_id 2 --max-samples-per-domain 5
 
@@ -374,6 +377,8 @@ async def run_capability(
     # Create output dir early so the log file lives alongside the results
     out_dir = make_output_dir(capability_id, output_dir)
     tlog = CapabilityLogger(capability_id, out_dir / "run.log")
+    # raciocínio de cada chamada ao modelo (agents/think_log.py); só acrescenta, para não perder nada ao retomar
+    os.environ["THINK_LOG"] = str(out_dir / "think.jsonl")
 
     tlog(f"Capability ID: {capability_id}")
     tlog(f"Mode: {cfg.mode}")
@@ -440,6 +445,102 @@ async def run_capability(
     return results
 
 
+async def run_domains_in_subprocesses(args, capability_ids: List[int]) -> None:
+    """Run each (capability, domain) pair in its own subprocess, at most
+    ``args.parallel_domains`` at a time.
+
+    Each subprocess is a regular single-domain run of this script with its
+    own MCP session, agent state, log and output folder
+    (``<output>/parts/<domain>/``), so domains never share state. This is
+    required for capability 1, whose per-question data universe lives in the
+    agent. When a domain finishes, its ``<domain>.json`` and
+    ``<domain>_tools.json`` are moved into the capability output directory,
+    so the merged directory has the same layout as a sequential run and
+    ``--restart`` keeps working.
+    """
+    import shutil
+    import sys
+
+    script = str(Path(__file__).resolve())
+    common: List[str] = ["--provider", args.provider, "--top-k-tools", str(args.top_k_tools),
+                         "--temperature", str(args.temperature), "--mcp-config", args.mcp_config]
+    if args.model:
+        common += ["--model", args.model]
+    if args.max_samples_per_domain:
+        common += ["--max-samples-per-domain", str(args.max_samples_per_domain)]
+    if args.max_iterations is not None:
+        common += ["--max-iterations", str(args.max_iterations)]
+    if args.phoenix:
+        common += ["--phoenix", "--phoenix-endpoint", args.phoenix_endpoint,
+                   "--phoenix-project", args.phoenix_project]
+
+    jobs = []  # (capability_id, domain, out_dir)
+    for tid in capability_ids:
+        # with several capabilities, each gets its own subfolder of --output
+        out_arg = args.output
+        if out_arg and len(capability_ids) > 1:
+            out_arg = str(Path(out_arg) / f"capability_{tid}")
+        out_dir = make_output_dir(tid, out_arg)
+        _, domains = load_benchmark_data(capability_id=tid, domains=args.domain, domain_names_only=True)
+        done = {p.stem for p in out_dir.glob("*.json")}
+        skipped = [d for d in domains if d in done]
+        if skipped:
+            print(f"[capability {tid}] skipping {len(skipped)} completed domain(s): {skipped}")
+        jobs += [(tid, d, out_dir) for d in domains if d not in done]
+
+    print(f"Running {len(jobs)} domain(s), {args.parallel_domains} at a time")
+    sem = asyncio.Semaphore(args.parallel_domains)
+    procs: List[asyncio.subprocess.Process] = []
+    failed: List[str] = []
+
+    async def _one(tid: int, domain: str, out_dir: Path) -> None:
+        async with sem:
+            part = out_dir / "parts" / domain
+            part.mkdir(parents=True, exist_ok=True)
+            cmd = [sys.executable, script, "--capability_id", str(tid), "--domain", domain,
+                   "--output", str(part), "--restart", *common]
+            print(f"[capability {tid}] {domain}: started (log: {part / 'console.log'})")
+            with open(part / "console.log", "w") as log:
+                proc = await asyncio.create_subprocess_exec(*cmd, stdout=log, stderr=asyncio.subprocess.STDOUT)
+                procs.append(proc)
+                rc = await proc.wait()
+            result = part / f"{domain}.json"
+            if rc == 0 and result.exists():
+                n = len(json.loads(result.read_text()))
+                # move the results up; parts/<domain>/ keeps only the logs
+                for f in (result, part / f"{domain}_tools.json"):
+                    if f.exists():
+                        shutil.move(str(f), str(out_dir / f.name))
+                print(f"[capability {tid}] {domain}: done ({n} result(s))")
+            else:
+                failed.append(f"{tid}/{domain}")
+                print(f"[capability {tid}] {domain}: FAILED (exit {rc}, see {part / 'console.log'})")
+
+    # Ctrl+C / kill: cancel the runs below so the finally block stops the subprocesses
+    import signal
+    main_task = asyncio.current_task()
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig, main_task.cancel)
+
+    try:
+        await asyncio.gather(*(_one(*j) for j in jobs))
+    except asyncio.CancelledError:
+        print("Interrupted: stopping domain runs (rerun the same command to resume)")
+        failed = None
+    finally:
+        # Ctrl+C or an error: do not leave orphan domain runs behind
+        for proc in procs:
+            if proc.returncode is None:
+                proc.terminate()
+        await asyncio.gather(*(p.wait() for p in procs), return_exceptions=True)
+
+    if failed is None:
+        return
+    print("=" * 60)
+    print(f"Finished: {len(jobs) - len(failed)} ok, {len(failed)} failed {failed if failed else ''}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Benchmark Runner for MCP Server"
@@ -471,6 +572,17 @@ def main():
         "--parallel",
         action="store_true",
         help="Run multiple capability_ids in parallel using asyncio.gather (default: sequential)"
+    )
+    parser.add_argument(
+        "--parallel-domains",
+        type=int,
+        default=1,
+        metavar="N",
+        help=(
+            "Run up to N domains at the same time, each in its own subprocess"
+            " (logs under <output>/parts/<domain>/, results in <output>/)."
+            " Default: 1 (sequential)"
+        ),
     )
     parser.add_argument(
         "--max-samples-per-domain",
@@ -566,6 +678,8 @@ def main():
     capability_ids = args.capability_id  # list of ints now
 
     mode = "parallel" if args.parallel and len(capability_ids) > 1 else "sequential"
+    if args.parallel_domains > 1:
+        mode = f"{args.parallel_domains} domains at a time"
     print("="*60)
     print(f"Benchmark Runner ({mode}, capabilities: {capability_ids})")
     print("="*60)
@@ -617,6 +731,11 @@ def main():
                 for c in coros:
                     await c
         asyncio.run(_list_all())
+        return
+
+    # Run domains in parallel subprocesses
+    if args.parallel_domains > 1:
+        asyncio.run(run_domains_in_subprocesses(args, capability_ids))
         return
 
     # Run tasks

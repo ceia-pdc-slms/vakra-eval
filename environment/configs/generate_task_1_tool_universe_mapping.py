@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-OUTPUT_DIRS_GLOB = "data/test/capability_1_bi_apis/output"
+OUTPUT_DIRS_GLOB = "data/{split}/capability_1_bi_apis/output"
 MAPPING_FILE = "environment/configs/mcp_tool_universe_id_mapping.yaml"
 
 # Unique to SelectionTools (not present in SlotFillingTools)
@@ -37,8 +37,8 @@ SLOT_FILLING_ONLY_TOOLS = {
 }
 
 
-def generate_mapping(dry_run: bool = False):
-    output_dirs = sorted(REPO_ROOT.glob(OUTPUT_DIRS_GLOB))
+def generate_mapping(dry_run: bool = False, split: str = "test"):
+    output_dirs = sorted(REPO_ROOT.glob(OUTPUT_DIRS_GLOB.format(split=split)))
     if not output_dirs:
         print(
             f"ERROR: No output directories found matching {OUTPUT_DIRS_GLOB}",
@@ -130,5 +130,6 @@ def generate_mapping(dry_run: bool = False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--split", default="test", help="data/<split>/ a usar (test ou train)")
     args = parser.parse_args()
-    generate_mapping(dry_run=args.dry_run)
+    generate_mapping(dry_run=args.dry_run, split=args.split)
