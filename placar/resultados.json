@@ -610,5 +610,73 @@
    0,
    27
   ]
+ },
+ "time-a-eval-v2-think/cap1": {
+  "airline": [
+   6,
+   22
+  ],
+  "cookbook": [
+   5,
+   32
+  ],
+  "law_episode": [
+   18,
+   63
+  ],
+  "music_tracker": [
+   6,
+   18
+  ],
+  "shakespeare": [
+   12,
+   52
+  ],
+  "university": [
+   33,
+   66
+  ],
+  "world_development_indicators": [
+   3,
+   32
+  ]
+ },
+ "time-a-eval-v2-think/cap2": {
+  "airline": [
+   8,
+   18
+  ],
+  "cookbook": [
+   21,
+   37
+  ],
+  "law_episode": [
+   21,
+   47
+  ],
+  "mental_health_survey": [
+   9,
+   27
+  ],
+  "music_tracker": [
+   6,
+   19
+  ],
+  "shakespeare": [
+   21,
+   35
+  ],
+  "student_loan": [
+   46,
+   88
+  ],
+  "university": [
+   44,
+   61
+  ],
+  "world_development_indicators": [
+   7,
+   27
+  ]
  }
 }
