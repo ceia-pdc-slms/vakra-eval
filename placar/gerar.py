@@ -9,6 +9,7 @@ import json, os, sys, html, datetime
 AQUI = os.path.dirname(os.path.abspath(__file__)); JS = f"{AQUI}/resultados.json"
 MODELOS = [("eval-v1", "https://github.com/ceia-pdc-slms/vakra-eval/issues/5", "time-a-eval-v1", "a"),
            ("eval-v2", "https://github.com/ceia-pdc-slms/vakra-eval/issues/6", "time-a-eval-v2", "a"),
+           ("eval-v1", "https://github.com/ceia-pdc-slms/vakra-eval/issues/11", "time-b-eval-v1", "b"),
            ("Qwen3.8-Flash-Next (FP8)", "", "qwen3.8-flash", "base"), ("Nemotron 3 Nano 4B", "", "nemotron-3-nano-4b", "base"),
            ("Lumi 4B", "https://huggingface.co/ceia-research/lumi-4b", "lumi-4b", "lumi"),
            ("T6-Lumi 4B", "https://huggingface.co/gustavobarrosss/t6-lumi-4b", "t6-lumi-4b", "base")]
@@ -148,6 +149,7 @@ li {{ max-width: 76ch; margin: 6px 0; }}
 <li>O Lumi e o T6-Lumi rodaram em máquinas diferentes, em parte dos domínios. A velocidade muda quantas perguntas estouram o tempo, então diferenças pequenas entre modos não são conclusivas.</li>
 <li>O <a href="https://github.com/ceia-pdc-slms/vakra-eval/issues/5">eval-v1 do Time A</a> tem os mesmos pesos, código e configuração do Lumi 4B (conferido por hash); a nota é a do run do Lumi 4B com thinking, sem novo run.</li>
 <li>O <a href="https://github.com/ceia-pdc-slms/vakra-eval/issues/6">eval-v2 do Time A</a> rodou num servidor dedicado, mais rápido que o dos outros modelos; parte dos timeouts dos outros pode vir da velocidade.</li>
+<li>O <a href="https://github.com/ceia-pdc-slms/vakra-eval/issues/11">eval-v1 do Time B</a> tem os mesmos pesos, código e configuração do Lumi 4B (conferido por hash); a nota é a do baseline.</li>
 <li>O baseline do desafio é o Lumi 4B, sem e com thinking.</li>
 <li>Só entram configurações com a avaliação completa; por isso nem todo modelo aparece nos dois modos e nas duas capacidades.</li>
 <li>Cada configuração rodou uma vez, com temperatura 0, e sem intervalo de confiança.</li>
