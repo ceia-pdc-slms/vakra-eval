@@ -8,6 +8,8 @@ Código que o PDC usa para avaliar os modelos dos times na **VAKRA** (caps 1 e 2
 2. Criem a tag, que fixa o commit avaliado: `hf repos tag create <repo> eval-v1 -m "o que mudou"`.
 3. Abram uma issue com o formulário [**Pedir eval de um modelo**](../../issues/new?template=pedir-eval.yml).
 
+Para um modelo de fora dos times, usem o formulário [**Pedir eval de qualquer modelo**](../../issues/new?template=pedir-eval-modelo.yml), com o link do Hugging Face.
+
 O resultado volta na própria issue.
 
 ## Placar
