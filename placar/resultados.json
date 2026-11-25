@@ -746,5 +746,73 @@
    2,
    27
   ]
+ },
+ "time-b-eval-v2-nothink/cap1": {
+  "airline": [
+   5,
+   22
+  ],
+  "cookbook": [
+   7,
+   32
+  ],
+  "law_episode": [
+   18,
+   63
+  ],
+  "music_tracker": [
+   4,
+   18
+  ],
+  "shakespeare": [
+   13,
+   52
+  ],
+  "university": [
+   31,
+   66
+  ],
+  "world_development_indicators": [
+   3,
+   32
+  ]
+ },
+ "time-b-eval-v2-nothink/cap2": {
+  "airline": [
+   8,
+   18
+  ],
+  "cookbook": [
+   17,
+   37
+  ],
+  "law_episode": [
+   21,
+   47
+  ],
+  "mental_health_survey": [
+   10,
+   27
+  ],
+  "music_tracker": [
+   7,
+   19
+  ],
+  "shakespeare": [
+   22,
+   35
+  ],
+  "student_loan": [
+   37,
+   88
+  ],
+  "university": [
+   43,
+   61
+  ],
+  "world_development_indicators": [
+   7,
+   27
+  ]
  }
 }
