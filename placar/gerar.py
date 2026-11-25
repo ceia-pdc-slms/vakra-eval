@@ -11,6 +11,7 @@ MODELOS = [("eval-v1", "https://github.com/ceia-pdc-slms/vakra-eval/issues/5", "
            ("eval-v2", "https://github.com/ceia-pdc-slms/vakra-eval/issues/6", "time-a-eval-v2", "a"),
            ("eval-v1", "https://github.com/ceia-pdc-slms/vakra-eval/issues/11", "time-b-eval-v1", "b"),
            ("eval-v2", "https://github.com/ceia-pdc-slms/vakra-eval/issues/12", "time-b-eval-v2", "b"),
+           ("eval-v3", "https://github.com/ceia-pdc-slms/vakra-eval/issues/14", "time-a-eval-v3", "a"),
            ("Qwen3.8-Flash-Next (FP8)", "", "qwen3.8-flash", "base"), ("Nemotron 3 Nano 4B", "", "nemotron-3-nano-4b", "base"),
            ("Lumi 4B", "https://huggingface.co/ceia-research/lumi-4b", "lumi-4b", "lumi"),
            ("T6-Lumi 4B", "https://huggingface.co/gustavobarrosss/t6-lumi-4b", "t6-lumi-4b", "base")]
