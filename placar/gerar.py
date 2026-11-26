@@ -52,25 +52,23 @@ def barras(c):
             if ls: tem = True; o.append(f'<div class="mod"><h4>{nm}</h4>{ls}</div>')
         o.append(("" if tem else '<p class="muted vazio">Nenhum modelo avaliado ainda.</p>') + '</div>')
     return "".join(o)
-def tabela(c):
-    cols = [(n, k, m, rot, g) for g, _ in GRUPOS for n, _, k, t in MODELOS if t == g for m, rot in MODOS if R[k, m, c]]   # só runs finalizados
+def tabela(c):   # um modelo (e modo) por linha, um domínio por coluna
     doms = {}
-    for n, k, m, _, _ in cols:
-        for d, (_, t) in (R[k, m, c] or {}).items(): doms[d] = t
-    ini = [i for i, x in enumerate(cols) if i == 0 or cols[i - 1][4] != x[4]]   # primeira coluna de cada grupo
-    cl = lambda i: f'g-{cols[i][4]}' + (' ini' if i in ini else '')
-    gs = "".join(f'<th class="gh g-{g} ini" colspan="{sum(x[4] == g for x in cols)}">{gn}</th>' for g, gn in GRUPOS if any(x[4] == g for x in cols))
-    h = "".join(f'<th class="r {cl(i)}">{n}<br><span>{rot}</span></th>' for i, (n, _, _, rot, _) in enumerate(cols))
+    for _, _, k, _ in MODELOS:
+        for m, _ in MODOS:
+            for d, (_, t) in (R[k, m, c] or {}).items(): doms[d] = t
+    h = "".join(f'<th class="r"><code>{d.replace("_", "_<wbr>")}</code><br><span>{doms[d]}</span></th>' for d in sorted(doms))
     ls = ""
-    for d in sorted(doms):
-        tds = ""
-        for i, (_, k, m, _, _) in enumerate(cols):
-            r = R[k, m, c]
-            if r is None or d not in r: tds += f'<td class="r muted {cl(i)}">–</td>'
-            else:
-                v = r[d][0] / r[d][1]; tds += f'<td class="r {cl(i)}" style="background:color-mix(in srgb,var(--cor) {round(v*45)}%,transparent)">{f2(v)}</td>'
-        ls += f'<tr><th scope="row"><code>{d}</code></th><td class="r">{doms[d]}</td>{tds}</tr>'
-    return f'<div class="rolar"><table class="tabela"><thead><tr><th colspan="2"></th>{gs}</tr><tr><th>Domínio</th><th class="r">Perguntas</th>{h}</tr></thead><tbody>{ls}</tbody></table></div>'
+    for g, gn in GRUPOS:
+        lin = [(n, url, k, m, rot) for n, url, k, t in MODELOS if t == g for m, rot in MODOS if R[k, m, c]]   # só runs finalizados
+        if not lin: continue
+        ls += f'<tr class="gl g-{g}"><th scope="rowgroup" colspan="{len(doms) + 3}"><span class="fixo">{gn}</span></th></tr>'
+        for n, url, k, m, rot in lin:
+            r = R[k, m, c]; v = nota(r, c); nm = f'<a href="{url}">{n}</a>' if url else n
+            cel = lambda v, x="": f'<td class="r{x}" style="background:color-mix(in srgb,var(--cor) {round(v*45)}%,transparent)">{f2(v)}</td>'
+            tds = "".join(cel(r[d][0] / r[d][1]) if d in r else '<td class="r muted">–</td>' for d in sorted(doms))
+            ls += f'<tr class="g-{g}"><th scope="row" class="fixo">{nm}</th><td class="modo">{rot}</td>{cel(v, " tot")}{tds}</tr>'
+    return f'<div class="rolar"><table class="tabela"><thead><tr><th class="fixo">Modelo</th><th>Modo</th><th class="r">Total<br><span>{TOT[c]}</span></th>{h}</tr></thead><tbody>{ls}</tbody></table></div>'
 falta = [f"{n} {rot} (cap {c})" for n, _, k, _ in MODELOS for m, rot in MODOS for c in (1, 2) if R[k, m, c] is None]
 hoje = datetime.date.today().strftime("%d/%m/%Y")
 SVG = '<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" style="fill:var(--accent)"/><g fill="#fff"><rect x="6.5" y="7" width="3.6" height="18" rx="1.3"/><rect x="12" y="10.5" width="3.6" height="14.5" rx="1.3"/><rect x="17.5" y="14" width="3.6" height="11" rx="1.3"/><rect x="23" y="17.5" width="3.6" height="7.5" rx="1.3"/></g></svg>'
@@ -106,8 +104,10 @@ section > p {{ max-width: 72ch; }}
 .grupo {{ border-left: 4px solid var(--cor); padding: 2px 0 2px 16px; margin-top: 22px; }}
 .gt {{ display: inline-block; font-size: .84rem; font-weight: 600; margin: 0; padding: 3px 10px; border-radius: var(--r-sm); background: var(--fundo); }}
 .grupo .mod {{ margin-top: 12px; }} .vazio {{ margin: 10px 0 0; font-size: .88rem; }}
-.rolar th.gh {{ text-align: left; text-transform: none; letter-spacing: 0; color: var(--fg); background: var(--fundo); border-top: 4px solid var(--cor); }}
-.rolar .ini {{ border-left: 2px solid var(--cor); }}
+.rolar tr.gl th {{ text-align: left; font-weight: 600; background: var(--fundo); border-left: 4px solid var(--cor); }}
+.rolar tbody tr:not(.gl) th {{ border-left: 4px solid var(--cor); font: 500 .88rem/1.3 var(--font-body, 'IBM Plex Sans', sans-serif); min-width: 150px; max-width: 230px; }} @media (max-width: 640px) {{ .rolar tbody tr:not(.gl) th {{ min-width: 112px; max-width: 124px; }} }}
+.rolar .fixo {{ position: sticky; left: 0; z-index: 1; }} .rolar th.fixo {{ background: var(--surface); }} .rolar .gl .fixo {{ left: 14px; }}
+.rolar td.modo {{ white-space: nowrap; font-size: .84rem; }} .rolar td.tot {{ font-weight: 600; border-right: 1px solid var(--line-strong); }}
 .s1 {{ background: color-mix(in srgb, var(--cor) 55%, var(--surface)); }} .s2 {{ background: var(--cor); }}
 .val {{ font-weight: 600; }}
 .leg {{ display: flex; gap: 18px; font-size: .84rem; color: var(--muted); margin: 20px 0 0; }}
@@ -115,8 +115,7 @@ section > p {{ max-width: 72ch; }}
 .rolar {{ overflow-x: auto; margin-top: 14px; border: 1px solid var(--line); border-radius: var(--r); }}
 .rolar th span {{ text-transform: none; letter-spacing: 0; }}
 .rolar th, .rolar td {{ padding: 8px 10px; }}
-.rolar thead th {{ min-width: 92px; }}
-.rolar tbody th code {{ font-size: .82rem; }}
+.rolar thead th {{ min-width: 78px; vertical-align: bottom; }} .rolar thead th code {{ font-size: .74rem; text-transform: none; letter-spacing: 0; background: none; padding: 0; display: inline-block; max-width: 118px; }}
 .rolar tbody th {{ text-transform: none; vertical-align: middle; letter-spacing: 0; color: var(--fg); }}
 li {{ max-width: 76ch; margin: 6px 0; }}
 </style>
@@ -138,7 +137,7 @@ li {{ max-width: 76ch; margin: 6px 0; }}
 </div>
 </section>
 <section>
-<h2>Por domínio, capacidade 1</h2>{tabela(1)}
+<h2>Por domínio, capacidade 1</h2><p class="muted">Uma linha por modelo e modo; o número abaixo de cada coluna é o total de perguntas.</p>{tabela(1)}
 <h2>Por domínio, capacidade 2</h2>{tabela(2)}
 </section>
 <section>
