@@ -1,0 +1,24 @@
+name: Pedir eval de qualquer modelo
+description: Avaliar um modelo do Hugging Face, de fora dos times, na VAKRA, caps 1 e 2
+title: "[Eval] Modelo: <nome>"
+labels: ["eval"]
+body:
+  - type: input
+    id: modelo
+    attributes:
+      label: Link do modelo no Hugging Face
+      description: "Um modelo por issue. Pode fixar a revisão com /tree/<revisão>; sem ela vale o commit atual da main. Precisa de pesos safetensors até 30 GB, sem código próprio, contexto de 65.536 ou mais e template com ferramentas."
+      placeholder: https://huggingface.co/maritaca-ai/S5-nano
+    validations: { required: true }
+  - type: checkboxes
+    id: modos
+    attributes:
+      label: Modos
+      description: Marque pelo menos um.
+      options:
+        - label: com thinking
+        - label: sem thinking
+  - type: textarea
+    id: motivo
+    attributes:
+      label: Por que avaliar
